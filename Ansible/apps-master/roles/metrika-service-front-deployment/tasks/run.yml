@@ -1,0 +1,22 @@
+---
+- name: Remove container
+  docker_container:
+    name: "{{ object_name }}"
+    state: absent
+
+- name: Clean up Docker images
+  docker_prune:
+    images: yes
+    images_filters:
+      dangling: false
+
+- name: Start a container
+  docker_container:
+    name: "{{ object_name }}"
+    image: "{{ docker_registry_url }}/{{ object_name }}:{{ version }}"
+    state: started
+    restart: yes
+    restart_policy: always
+    ports:
+     - "{{ object_port_http }}"
+     - "{{ object_port_https }}" 

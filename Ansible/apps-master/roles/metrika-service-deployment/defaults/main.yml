@@ -1,0 +1,3 @@
+object_name: "metrika-service"
+object_port: "80:80"
+app_image: "{{ docker_registry_url }}/{{ object_name }}:{{ version }}"

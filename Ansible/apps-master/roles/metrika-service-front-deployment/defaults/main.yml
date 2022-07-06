@@ -1,0 +1,4 @@
+object_name: "metrika-service-front"
+object_port_http: "80:80"
+object_port_https: "443:443"
+app_image: "{{ docker_registry_url }}/{{ object_name }}:{{ version }}"

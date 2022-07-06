@@ -1,0 +1,34 @@
+---
+- name: Remove container
+  docker_container:
+    name: "{{ object_name }}"
+    state: absent
+
+- name: Clean up Docker images
+  docker_prune:
+    images: yes
+    images_filters:
+      dangling: false
+
+- name: Start a container
+  docker_container:
+    name: "{{ object_name }}"
+    image: "{{ docker_registry_url }}/{{ object_name }}:{{ version }}"
+    state: started
+    restart: yes
+    restart_policy: always
+    ports:
+     - "{{ object_port }}"
+    env:
+        ASPNETCORE_ENVIRONMENT: 'Development'
+        APPSETTINGS__DBSETTINGS__CONNECTIONSTRING: 'Server=192.168.1.20; Port=5432; Database=metrika_db; User Id=metrika_db; Password=**********;'
+        APPSETTINGS__TELEGRAMBOTTOKEN: '***********************'
+        APPSETTINGS__BOTSETTINGS__SUPPORTURL: 'https://t.me/*****'
+        APPSETTINGS__BOTSETTINGS__REQUESTCHATID: '*******'
+        APPSETTINGS__EMAILSETTINGS__FROM: '***************'
+        APPSETTINGS__EMAILSETTINGS__TO: '***************'
+        APPSETTINGS__EMAILSETTINGS__SMTPSERVER: 'smtp.gmail.com'
+        APPSETTINGS__EMAILSETTINGS__SMTPPORT: '465'
+        APPSETTINGS__EMAILSETTINGS__USERNAME: '***************'
+        APPSETTINGS__EMAILSETTINGS__PASSWORD: '**********'
+        APPSETTINGS__NOTICESETTINGS__COUNT: '5'

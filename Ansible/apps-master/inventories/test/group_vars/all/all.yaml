@@ -1,0 +1,2 @@
+project_name: metrika
+docker_registry_url: docker.idb.local:5000

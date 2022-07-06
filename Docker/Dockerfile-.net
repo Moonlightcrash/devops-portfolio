@@ -1,0 +1,30 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS builder
+WORKDIR /source
+
+# copy all and resrote packages
+COPY . .
+
+# setup timezone
+RUN ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && echo $TZ > /etc/timezone
+
+RUN dotnet restore --configfile NuGet.Config --packages /nuget
+
+RUN dotnet publish ./MetrikaService.Api/MetrikaService.Api.csproj --no-restore -c Release -o /app
+
+# build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
+WORKDIR /app
+COPY --from=builder /app .
+
+RUN apt-get update -y && apt-get install mc -y && apt-get clean
+
+# setup timezone + locale
+RUN ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && echo $TZ > /etc/timezone
+RUN apt-get install -y locales locales-all
+ENV LANGUAGE ru_RU.UTF-8
+ENV LANG ru_RU.UTF-8
+ENV LC_ALL ru_RU.UTF-8
+RUN locale-gen ru_RU.UTF-8 && dpkg-reconfigure locales
+
+ENTRYPOINT ["dotnet", "MetrikaService.Api.dll"]
